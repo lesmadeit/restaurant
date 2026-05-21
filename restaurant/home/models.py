@@ -40,3 +40,24 @@ class MenuItem(models.Model):
         return f"{self.name} - ${self.price}"
 
 
+class Special(models.Model):
+    title = models.CharField(max_length=200)
+    slug = models.SlugField(unique=True, blank=True)
+    short_description = models.TextField(blank=True)
+    description = models.TextField()
+    image = models.ImageField(upload_to='specials/', blank=True, null=True)
+    price = models.DecimalField(max_digits=6, decimal_places=2, blank=True, null=True)
+    order = models.PositiveIntegerField(default=0)
+    is_active = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ['order', 'title']
+        verbose_name_plural = "Specials"
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.title)
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.title
